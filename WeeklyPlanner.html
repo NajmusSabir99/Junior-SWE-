@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>12-Week Execution Plan</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#0E1116;
+    --surface:#161B22;
+    --surface-2:#1D232C;
+    --line:#2A313C;
+    --text:#E6E8EB;
+    --muted:#8B93A1;
+    --accent:#E3B341;
+    --accent-dim:#4A3D1C;
+    --success:#5FBF77;
+    --track-dsa:#E3B341;
+    --track-db:#5EC8D8;
+    --track-oop:#D68FD6;
+    --track-sd:#8FA8E3;
+    --track-l1:#5FBF77;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{display:flex; min-height:100vh;}
+
+  /* Sidebar */
+  .sidebar{
+    width:220px; min-width:180px;
+    background:var(--surface);
+    border-right:1px solid var(--line);
+    padding:24px 14px;
+    display:flex; flex-direction:column; gap:4px;
+  }
+  .brand{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700; font-size:15px;
+    color:var(--text);
+    letter-spacing:0.02em;
+    margin-bottom:4px; padding:0 8px;
+  }
+  .brand span{color:var(--accent);}
+  .subbrand{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px; color:var(--muted);
+    padding:0 8px 20px; border-bottom:1px solid var(--line); margin-bottom:14px;
+  }
+  .week-btn{
+    display:flex; align-items:center; gap:10px;
+    padding:9px 10px; border-radius:6px;
+    cursor:pointer; border:1px solid transparent;
+    font-family:'IBM Plex Mono',monospace; font-size:13px;
+    color:var(--muted);
+    transition:background .15s, color .15s;
+  }
+  .week-btn:hover{background:var(--surface-2); color:var(--text);}
+  .week-btn.active{background:var(--surface-2); border-color:var(--line); color:var(--text);}
+  .week-num{
+    width:22px; height:22px; border-radius:4px;
+    background:var(--surface-2);
+    display:flex; align-items:center; justify-content:center;
+    font-size:11px; color:var(--muted); flex-shrink:0;
+  }
+  .week-btn.done .week-num{background:var(--success); color:#0E1116; font-weight:600;}
+  .week-btn.active .week-num{background:var(--accent); color:#0E1116; font-weight:600;}
+
+  /* Main */
+  .main{flex:1; padding:36px 44px; max-width:920px;}
+  .top-row{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;}
+  h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:28px; margin:0 0 4px;
+    letter-spacing:-0.01em;
+  }
+  .week-meta{color:var(--muted); font-size:13px; font-family:'IBM Plex Mono',monospace;}
+
+  .progress-outer{
+    margin:20px 0 30px;
+    height:6px; background:var(--surface-2); border-radius:3px; overflow:hidden;
+  }
+  .progress-inner{
+    height:100%; background:linear-gradient(90deg, var(--accent), var(--success));
+    width:0%; transition:width .3s;
+  }
+
+  .daily-template{
+    background:var(--surface); border:1px solid var(--line); border-radius:10px;
+    padding:16px 18px; margin-bottom:28px; font-size:12.5px; color:var(--muted);
+  }
+  .daily-template b{color:var(--text); font-family:'IBM Plex Mono',monospace;}
+  .daily-template summary{cursor:pointer; color:var(--text); font-weight:600; font-size:13px;}
+
+  .track{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-left:3px solid var(--track-color);
+    border-radius:8px;
+    padding:14px 16px;
+    margin-bottom:12px;
+  }
+  .track-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--track-color); margin-bottom:6px; font-weight:600;
+  }
+  .task{
+    display:flex; align-items:flex-start; gap:10px;
+    padding:6px 0; cursor:pointer; user-select:none;
+  }
+  .task input{margin-top:3px; accent-color:var(--track-color); width:15px; height:15px; cursor:pointer;}
+  .task span{font-size:14.5px; line-height:1.4;}
+  .task.checked span{color:var(--muted); text-decoration:line-through;}
+
+  .footer-note{
+    margin-top:30px; padding:14px 16px;
+    background:var(--surface); border:1px solid var(--line); border-radius:8px;
+    font-size:12px; color:var(--muted);
+  }
+  .footer-note b{color:var(--accent);}
+
+  ::-webkit-scrollbar{width:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--line); border-radius:4px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="sidebar" id="sidebar">
+    <div class="brand">WEEK <span>TRACKER</span></div>
+    <div class="subbrand">12-WEEK PLAN · JR SWE PREP</div>
+    <div id="weekList"></div>
+  </div>
+  <div class="main">
+    <div class="top-row">
+      <div>
+        <h1 id="weekTitle">Week 1</h1>
+        <div class="week-meta" id="weekMeta">DSA · DBMS · OOP · SYSTEM DESIGN · L1</div>
+      </div>
+    </div>
+    <div class="progress-outer"><div class="progress-inner" id="progBar"></div></div>
+
+    <details class="daily-template">
+      <summary>Daily template (Sat–Wed)</summary>
+      <div style="margin-top:10px; display:grid; gap:6px;">
+        <div><b>4:30 AM</b> — Wake, Salah, tea</div>
+        <div><b>5:00–7:00 AM</b> — Deep Work 1: DSA</div>
+        <div><b>7:00–8:30 AM</b> — Gym</div>
+        <div><b>9:00 AM–1:00 PM</b> — Deep Work 2: PH L1 build</div>
+        <div><b>1:00–2:30 PM</b> — Lunch + rest</div>
+        <div><b>2:30–6:00 PM</b> — Deep Work 3: DBMS / OOP / System Design (rotates)</div>
+        <div><b>6:00–6:30 PM</b> — Light review (flashcards)</div>
+        <div><b>6:30–8:00 PM</b> — Family / rest (protected)</div>
+        <div><b>8:00 PM</b> — Sleep</div>
+        <div style="margin-top:6px; color:var(--muted);">Thursday: Deep Work 1+2 only (~6h). Friday: 5–7 AM only, then off.</div>
+      </div>
+    </details>
+
+    <div id="tracks"></div>
+
+    <div class="footer-note">
+      <b>Reminder:</b> job applications start Week 9, once the backend-integration milestone lands. Protect the 6:30–8:00 PM block — it's what keeps the other 11 weeks sustainable.
+    </div>
+  </div>
+</div>
+
+<script>
+const weeks = [
+{ dsa:["Arrays & Hashing (9 problems)","Two Pointers (5 problems)"],
+  db:["Querying — SELECT, CREATE, INSERT, UPDATE, DELETE, DROP"],
+  oop:["OOP basics refresher","SOLID: Single Responsibility, Open/Closed"],
+  sd:[],
+  l1:["Milestone -1: Welcome to the Web Course","Milestone 0: Orientation","Milestone 1: HTML, CSS & GitHub as a beginner"]},
+{ dsa:["Sliding Window (6 problems)","Stack (6 problems)"],
+  db:["Relating — joins, primary/foreign keys, normalization"],
+  oop:["SOLID: Liskov Substitution, Interface Segregation, Dependency Inversion","Code Smells: Bloaters"],
+  sd:[],
+  l1:["Milestone 2: Responsive Web Layout","Start Assignment 5: Emergency Service Directory"]},
+{ dsa:["Binary Search (7 problems)","Linked List — first 6 of 11"],
+  db:["Designing — data modeling, data types, triggers, constraints"],
+  oop:["Code Smells: Object-Orientation Abusers, Change Preventers","Refactoring Techniques: Composing Methods"],
+  sd:[],
+  l1:["Milestone 3: CSS Frameworks","Finish Assignment 5"]},
+{ dsa:["Linked List — remaining 5","Trees — first 7 of 15"],
+  db:["Writing — SQL with Python/Java","Viewing — SQL views"],
+  oop:["Refactoring Techniques: Moving Features, Organizing Data, Simplifying Conditionals"],
+  sd:["4-Step Framework for System Design Interviews","Scale From Zero to Millions of Users"],
+  l1:["Milestone 4: Hello JavaScript","Milestone 5: Integrate JavaScript","Start Assignment 6: Green Earth"]},
+{ dsa:["Trees — remaining 8"],
+  db:["Optimizing — indexes","Scaling — SQLite → PostgreSQL/MySQL"],
+  oop:["Creational Patterns: Factory Method, Abstract Factory, Builder, Prototype, Singleton"],
+  sd:["Back-of-the-Envelope Estimation"],
+  l1:["Milestone 6: Intermediate JavaScript, API","Finish Assignment 6"]},
+{ dsa:["Heap / Priority Queue (7 problems)","Backtracking — first 5 of 10"],
+  db:["Final Project — design & implement your own database"],
+  oop:["Structural Patterns: Adapter, Decorator, Facade, Proxy"],
+  sd:["Design a Rate Limiter"],
+  l1:["Milestone 7: Introduction to Simple React","Assignment 7: Customer Support Zone"]},
+{ dsa:["Backtracking — remaining 5","Tries (3 problems)"],
+  db:["Polish / finish Final Project"],
+  oop:["Behavioral Patterns: Strategy, Observer, Command, State, Iterator"],
+  sd:["Design Consistent Hashing"],
+  l1:["Milestone 8: React Router & State Management","Assignment 8: App Store Application"]},
+{ dsa:["Graphs — part 1 (~10 of 19)"],
+  db:["Fold into upcoming backend integration work"],
+  oop:["Apply patterns: refactor 1–2 places in your own React code"],
+  sd:["Design a Key-Value Store"],
+  l1:["Milestone 9: React Authentication + extra assignment","Start Milestone 10: Backend & Database Integrate"]},
+{ dsa:["Graphs — remaining ~9"],
+  db:["Applied directly in Milestone 10/11 backend work"],
+  oop:["Applied directly in backend (Factory/Repository pattern in Express)"],
+  sd:["Design a Unique ID Generator in Distributed Systems"],
+  l1:["Milestone 10-11: Backend+DB integrate, JWT & Axios Interceptor","★ START APPLYING TO JOBS"]},
+{ dsa:["Dynamic Programming (1D) — 12 problems"],
+  db:[],
+  oop:[],
+  sd:["Design a URL Shortener","Design a Web Crawler"],
+  l1:["Milestone 12 start: Assignment 9 — Skill Trading Platform"]},
+{ dsa:["Dynamic Programming (2D/Advanced) — 11 problems"],
+  db:[],
+  oop:[],
+  sd:["Design a Notification System","Design a Chat System"],
+  l1:["Milestone 12 cont: Final Assignment — Zap Shift Resources"]},
+{ dsa:["Greedy (8)","Intervals (6)","Math & Geometry (8)","Bit Manipulation (7)","Mixed timed review + BS23/Therap/Enosis archived questions"],
+  db:[],
+  oop:[],
+  sd:["Design a News Feed System","Review all covered topics"],
+  l1:["Milestone 13: Explore More & Get Ready to Be Hired","Assignment 10: UI Design Standards","Resume/portfolio polish"]}
+];
+
+const trackDefs = [
+  {key:'dsa', label:'DSA — NeetCode150', color:'var(--track-dsa)'},
+  {key:'db', label:'Database — CS50 SQL', color:'var(--track-db)'},
+  {key:'oop', label:'OOP — Refactoring.Guru', color:'var(--track-oop)'},
+  {key:'sd', label:'System Design — Alex Xu', color:'var(--track-sd)'},
+  {key:'l1', label:'PH Level 1', color:'var(--track-l1)'}
+];
+
+let currentWeek = 0;
+let state = {}; // { "w0_dsa_0": true, ... }
+
+async function loadState(){
+  try{
+    const res = await window.storage.get('plan-state');
+    if(res && res.value) state = JSON.parse(res.value);
+  }catch(e){ state = {}; }
+}
+async function saveState(){
+  try{ await window.storage.set('plan-state', JSON.stringify(state)); }catch(e){}
+}
+
+function weekCompletion(wIdx){
+  const w = weeks[wIdx];
+  let total=0, done=0;
+  trackDefs.forEach(t=>{
+    w[t.key].forEach((_,i)=>{
+      total++;
+      if(state[`w${wIdx}_${t.key}_${i}`]) done++;
+    });
+  });
+  return total ? done/total : 0;
+}
+
+function renderSidebar(){
+  const list = document.getElementById('weekList');
+  list.innerHTML = '';
+  weeks.forEach((w,i)=>{
+    const c = weekCompletion(i);
+    const btn = document.createElement('div');
+    btn.className = 'week-btn' + (i===currentWeek ? ' active':'') + (c===1 ? ' done':'');
+    btn.innerHTML = `<div class="week-num">${c===1?'✓':i+1}</div><div>Week ${i+1}</div>`;
+    btn.onclick = ()=>{ currentWeek = i; render(); };
+    list.appendChild(btn);
+  });
+}
+
+function renderMain(){
+  document.getElementById('weekTitle').textContent = `Week ${currentWeek+1}`;
+  const c = Math.round(weekCompletion(currentWeek)*100);
+  document.getElementById('weekMeta').textContent = `DSA · DBMS · OOP · SYSTEM DESIGN · L1 — ${c}% complete`;
+  document.getElementById('progBar').style.width = c+'%';
+
+  const tracksEl = document.getElementById('tracks');
+  tracksEl.innerHTML = '';
+  const w = weeks[currentWeek];
+  trackDefs.forEach(t=>{
+    if(w[t.key].length===0) return;
+    const div = document.createElement('div');
+    div.className = 'track';
+    div.style.setProperty('--track-color', t.color);
+    let inner = `<div class="track-label">${t.label}</div>`;
+    w[t.key].forEach((task,i)=>{
+      const id = `w${currentWeek}_${t.key}_${i}`;
+      const checked = state[id] ? 'checked' : '';
+      inner += `<div class="task ${state[id]?'checked':''}" data-id="${id}">
+        <input type="checkbox" ${checked} />
+        <span>${task}</span>
+      </div>`;
+    });
+    div.innerHTML = inner;
+    tracksEl.appendChild(div);
+  });
+
+  tracksEl.querySelectorAll('.task').forEach(el=>{
+    el.addEventListener('click', async (e)=>{
+      const id = el.getAttribute('data-id');
+      state[id] = !state[id];
+      await saveState();
+      render();
+    });
+  });
+}
+
+function render(){
+  renderSidebar();
+  renderMain();
+}
+
+(async ()=>{
+  await loadState();
+  render();
+})();
+</script>
+</body>
+</html>

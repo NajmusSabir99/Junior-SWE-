@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Detailed Syllabus by Topic</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#0E1116;
+    --surface:#161B22;
+    --surface-2:#1D232C;
+    --line:#2A313C;
+    --text:#E6E8EB;
+    --muted:#8B93A1;
+    --accent:#E3B341;
+    --success:#5FBF77;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:'IBM Plex Sans',sans-serif; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{display:flex; min-height:100vh;}
+
+  .sidebar{
+    width:240px; min-width:200px;
+    background:var(--surface); border-right:1px solid var(--line);
+    padding:24px 14px; display:flex; flex-direction:column; gap:4px;
+  }
+  .brand{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15px; margin-bottom:4px; padding:0 8px;}
+  .brand span{color:var(--accent);}
+  .subbrand{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); padding:0 8px 20px; border-bottom:1px solid var(--line); margin-bottom:14px;}
+
+  .topic-btn{
+    display:flex; align-items:center; gap:10px; padding:12px 10px; border-radius:8px;
+    cursor:pointer; border:1px solid transparent;
+    transition:background .15s, color .15s;
+  }
+  .topic-btn:hover{background:var(--surface-2);}
+  .topic-btn.active{background:var(--surface-2); border-color:var(--line);}
+  .topic-dot{width:9px; height:9px; border-radius:50%; flex-shrink:0;}
+  .topic-name{font-size:13.5px; font-weight:500;}
+  .topic-sub{font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--muted); margin-top:1px;}
+  .topic-pct{margin-left:auto; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted);}
+
+  .main{flex:1; padding:36px 44px; max-width:960px;}
+  h1{font-family:'Space Grotesk',sans-serif; font-size:26px; margin:0 0 3px; letter-spacing:-0.01em;}
+  .topic-resource{color:var(--muted); font-size:13px; font-family:'IBM Plex Mono',monospace; margin-bottom:20px;}
+
+  .progress-outer{height:6px; background:var(--surface-2); border-radius:3px; overflow:hidden; margin-bottom:28px;}
+  .progress-inner{height:100%; background:linear-gradient(90deg, var(--accent), var(--success)); width:0%; transition:width .3s;}
+
+  .section{
+    background:var(--surface); border:1px solid var(--line); border-radius:10px;
+    margin-bottom:16px; overflow:hidden;
+  }
+  .section-head{
+    padding:13px 16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center;
+    font-weight:600; font-size:14px;
+  }
+  .section-head .chev{color:var(--muted); font-size:12px; transition:transform .15s;}
+  .section.open .chev{transform:rotate(90deg);}
+  .section-body{display:none; padding:0 16px 14px;}
+  .section.open .section-body{display:block;}
+  .section-meta{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); font-weight:400;}
+
+  .task{display:flex; align-items:flex-start; gap:10px; padding:5px 0; cursor:pointer; user-select:none;}
+  .task input{margin-top:3px; accent-color:var(--accent); width:14px; height:14px; cursor:pointer;}
+  .task span{font-size:13.5px; line-height:1.4;}
+  .task.checked span{color:var(--muted); text-decoration:line-through;}
+
+  .note-box{
+    margin-top:20px; padding:14px 16px; background:var(--surface);
+    border:1px solid var(--line); border-radius:8px; font-size:12px; color:var(--muted);
+  }
+  .note-box b{color:var(--accent);}
+  ::-webkit-scrollbar{width:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--line); border-radius:4px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="sidebar" id="sidebar">
+    <div class="brand">SYLLABUS <span>BY TOPIC</span></div>
+    <div class="subbrand">CLICK A TOPIC TO EXPAND</div>
+    <div id="topicList"></div>
+  </div>
+  <div class="main">
+    <h1 id="topicTitle"></h1>
+    <div class="topic-resource" id="topicResource"></div>
+    <div class="progress-outer"><div class="progress-inner" id="progBar"></div></div>
+    <div id="sections"></div>
+    <div class="note-box" id="noteBox" style="display:none;"></div>
+  </div>
+</div>
+
+<script>
+const topics = [
+{
+  key:'dsa', name:'DSA', color:'#E3B341', resource:'NeetCode 150 — Navdeep Singh, former Google Engineer',
+  sections:[
+    {title:'Arrays & Hashing', items:['Contains Duplicate','Valid Anagram','Two Sum','Group Anagrams','Top K Frequent Elements','Encode and Decode Strings','Product of Array Except Self','Valid Sudoku','Longest Consecutive Sequence']},
+    {title:'Two Pointers', items:['Valid Palindrome','Two Sum II — Input Array Is Sorted','3Sum','Container With Most Water','Trapping Rain Water']},
+    {title:'Sliding Window', items:['Best Time to Buy and Sell Stock','Longest Substring Without Repeating Characters','Longest Repeating Character Replacement','Permutation in String','Minimum Window Substring','Sliding Window Maximum']},
+    {title:'Stack', items:['Valid Parentheses','Min Stack','Evaluate Reverse Polish Notation','Daily Temperatures','Car Fleet','Largest Rectangle in Histogram']},
+    {title:'Binary Search', items:['Binary Search','Search a 2D Matrix','Koko Eating Bananas','Find Minimum in Rotated Sorted Array','Search in Rotated Sorted Array','Time Based Key-Value Store','Median of Two Sorted Arrays']},
+    {title:'Linked List', items:['Reverse Linked List','Merge Two Sorted Lists','Linked List Cycle','Reorder List','Remove Nth Node From End of List','Copy List with Random Pointer','Add Two Numbers','Find the Duplicate Number','LRU Cache','Merge K Sorted Lists','Reverse Nodes in K-Group']},
+    {title:'Trees', items:['Invert Binary Tree','Maximum Depth of Binary Tree','Diameter of Binary Tree','Balanced Binary Tree','Same Tree','Subtree of Another Tree','Lowest Common Ancestor of a BST','Binary Tree Level Order Traversal','Binary Tree Right Side View','Count Good Nodes in Binary Tree','Validate Binary Search Tree','Kth Smallest Element in a BST','Construct Binary Tree from Preorder and Inorder Traversal','Binary Tree Maximum Path Sum','Serialize and Deserialize Binary Tree']},
+    {title:'Heap / Priority Queue', items:['Kth Largest Element in a Stream','Last Stone Weight','K Closest Points to Origin','Kth Largest Element in an Array','Task Scheduler','Design Twitter','Find Median from Data Stream']},
+    {title:'Backtracking', items:['Subsets','Combination Sum','Combination Sum II','Permutations','Subsets II','Generate Parentheses','Word Search','Palindrome Partitioning','Letter Combinations of a Phone Number','N-Queens']},
+    {title:'Tries', items:['Implement Trie (Prefix Tree)','Design Add and Search Words Data Structure','Word Search II']},
+    {title:'Graphs', items:['Number of Islands','Max Area of Island','Clone Graph','Walls and Gates','Rotting Oranges','Pacific Atlantic Water Flow','Surrounded Regions','Course Schedule','Course Schedule II','Graph Valid Tree','Number of Connected Components in an Undirected Graph','Redundant Connection','Word Ladder','Network Delay Time','Reconstruct Itinerary','Min Cost to Connect All Points','Swim in Rising Water','Alien Dictionary','Cheapest Flights Within K Stops']},
+    {title:'Dynamic Programming (1D)', items:['Climbing Stairs','Min Cost Climbing Stairs','House Robber','House Robber II','Longest Palindromic Substring','Palindromic Substrings','Decode Ways','Coin Change','Maximum Product Subarray','Word Break','Longest Increasing Subsequence','Partition Equal Subset Sum']},
+    {title:'Dynamic Programming (2D) / Advanced', items:['Unique Paths','Longest Common Subsequence','Best Time to Buy and Sell Stock with Cooldown','Coin Change II','Target Sum','Interleaving String','Longest Increasing Path in a Matrix','Distinct Subsequences','Edit Distance','Burst Balloons','Regular Expression Matching']},
+    {title:'Greedy', items:['Maximum Subarray','Jump Game','Jump Game II','Gas Station','Hand of Straights','Merge Triplets to Form Target Triplet','Partition Labels','Valid Parenthesis String']},
+    {title:'Intervals', items:['Insert Interval','Merge Intervals','Non-overlapping Intervals','Meeting Rooms','Meeting Rooms II','Minimum Interval to Include Each Query']},
+    {title:'Math & Geometry', items:['Rotate Image','Spiral Matrix','Set Matrix Zeroes','Happy Number','Plus One','Pow(x, n)','Multiply Strings','Detect Squares']},
+    {title:'Bit Manipulation', items:['Single Number','Number of 1 Bits','Counting Bits','Reverse Bits','Missing Number','Sum of Two Integers','Reverse Integer']}
+  ]
+},
+{
+  key:'db', name:'Database', color:'#5EC8D8', resource:"CS50: Introduction to Databases with SQL — Harvard University, David J. Malan",
+  sections:[
+    {title:'1. Querying', items:['SELECT','CREATE TABLE','INSERT','UPDATE','DELETE','DROP']},
+    {title:'2. Relating', items:['Joins','Primary & Foreign Keys','Normalization']},
+    {title:'3. Designing', items:['Data modeling','Data types','Triggers','Constraints']},
+    {title:'4. Writing', items:['Connecting SQL with Python','Connecting SQL with Java']},
+    {title:'5. Viewing', items:['SQL Views']},
+    {title:'6. Optimizing', items:['Indexes for performance']},
+    {title:'7. Scaling', items:['SQLite → PostgreSQL','SQLite → MySQL']},
+    {title:'8. Final Project', items:['Design and implement your own database']}
+  ]
+},
+{
+  key:'oop', name:'OOP & Design Patterns', color:'#D68FD6', resource:'Refactoring.Guru — Dive Into Design Patterns, Alexander Shvets',
+  sections:[
+    {title:'Refactoring — Code Smells', items:['Bloaters','Object-Orientation Abusers','Change Preventers','Dispensables','Couplers']},
+    {title:'Refactoring — Techniques', items:['Composing Methods','Moving Features','Organizing Data','Simplifying Conditionals']},
+    {title:'Design Patterns — Creational', items:['Factory Method','Abstract Factory','Builder','Prototype','Singleton']},
+    {title:'Design Patterns — Structural', items:['Adapter','Decorator','Facade','Proxy']},
+    {title:'Design Patterns — Behavioral', items:['Strategy','Observer','Command','State','Iterator']},
+    {title:'Core Principles', items:['SOLID — Single Responsibility Principle','SOLID — Open/Closed Principle','SOLID — Liskov Substitution Principle','SOLID — Interface Segregation Principle','SOLID — Dependency Inversion Principle','Clean Code Concepts']}
+  ]
+},
+{
+  key:'sd', name:'System Design & Architecture', color:'#8FA8E3', resource:"System Design Interview — An Insider's Guide, Alex Xu",
+  sections:[
+    {title:'Part 1 — Fundamentals & Framework', items:['Scale From Zero to Millions of Users','Back-of-the-Envelope Estimation','A Framework for System Design Interviews (4-step process)']},
+    {title:'Part 2 — Building Core Components', items:['Design a Rate Limiter','Design Consistent Hashing','Design a Key-Value Store','Design a Unique ID Generator in Distributed Systems']},
+    {title:'Part 3 — Real-World Case Studies (Vol. 1)', items:['Design a URL Shortener','Design a Web Crawler','Design a Notification System','Design a News Feed System','Design a Chat System','Design a Search Autocomplete System','Design YouTube','Design Google Drive']},
+    {title:'Part 4 — Advanced Case Studies (Vol. 2) — deferred, post-hire / senior-level', items:['Proximity Service','Nearby Friends','Google Maps','Distributed Message Queue','Metrics Monitoring and Alerting System','Ad Click Event Aggregation','Hotel Reservation System']}
+  ],
+  note:'Part 4 showed zero presence in your archived fresher-level interview data (BS23/Cefalo/Therap/Enosis). Left in for completeness, but not required before month 3.'
+},
+{
+  key:'l1', name:'PH Level 1', color:'#5FBF77', resource:'Programming Hero — Web Development Roadmap (15 Milestones)',
+  sections:[
+    {title:'Milestone -1 / 0 / 1', items:['Welcome to the Web Course','Orientation — What Matters in This Course?','HTML, CSS and GitHub as a Beginner']},
+    {title:'Milestone 2 — Responsive Web Layout', items:['Assignment 5: Emergency Service Directory — HTML/CSS/Vanilla JS, Navbar, Hero, Service cards, Call History, Clipboard API']},
+    {title:'Milestone 3 — CSS Frameworks', items:['Assignment 5 continued — Tailwind/DaisyUI']},
+    {title:'Milestone 4 — Hello JavaScript', items:['Assignment 5 continued']},
+    {title:'Milestone 5 — Integrate JavaScript', items:['Assignment 6: Green Earth — dynamic category API, cart system, loading states']},
+    {title:'Milestone 6 — Intermediate JavaScript, API', items:['Assignment 6 continued']},
+    {title:'Milestone 7 — Introduction to Simple React', items:['Assignment 7: Customer Support Zone — state, React-Toastify, ticket cards']},
+    {title:'Milestone 8 — React Router and State Management', items:['Assignment 8: App Store Application — routing, Recharts, LocalStorage, search/sort']},
+    {title:'Milestone 9 — React Authentication', items:['Extra assignment (auth flow)']},
+    {title:'Milestone 10 — Backend and Database Integrate', items:['Backend/DB integration work']},
+    {title:'Milestone 11 — Backend with JWT and Axios Interceptor', items:['JWT auth + Axios interceptor implementation']},
+    {title:'Milestone 12 — Final Project (Complete Website)', items:['Assignment 9: Skill Trading Platform — React + Firebase','Final Assignment: Zap Shift Resources — roles, dynamic pricing, state-machine workflow, commission logic']},
+    {title:'Milestone 13 — Explore More & Get Ready to Be Hired', items:['Assignment 10: UI Design Standard Requirements — consistent styling, layout, branding']}
+  ]
+}
+];
+
+let currentTopic = 0;
+let state = {};
+
+async function loadState(){
+  try{
+    const res = await window.storage.get('topic-syllabus-state');
+    if(res && res.value) state = JSON.parse(res.value);
+  }catch(e){ state = {}; }
+}
+async function saveState(){
+  try{ await window.storage.set('topic-syllabus-state', JSON.stringify(state)); }catch(e){}
+}
+
+function topicCompletion(tIdx){
+  const t = topics[tIdx];
+  let total=0, done=0;
+  t.sections.forEach((s,si)=>{
+    s.items.forEach((_,ii)=>{
+      total++;
+      if(state[`t${tIdx}_s${si}_i${ii}`]) done++;
+    });
+  });
+  return total ? done/total : 0;
+}
+
+function renderSidebar(){
+  const list = document.getElementById('topicList');
+  list.innerHTML = '';
+  topics.forEach((t,i)=>{
+    const pct = Math.round(topicCompletion(i)*100);
+    const btn = document.createElement('div');
+    btn.className = 'topic-btn' + (i===currentTopic ? ' active':'');
+    btn.innerHTML = `<div class="topic-dot" style="background:${t.color}"></div>
+      <div style="flex:1">
+        <div class="topic-name">${t.name}</div>
+      </div>
+      <div class="topic-pct">${pct}%</div>`;
+    btn.onclick = ()=>{ currentTopic = i; render(); };
+    list.appendChild(btn);
+  });
+}
+
+function renderMain(){
+  const t = topics[currentTopic];
+  document.getElementById('topicTitle').textContent = t.name;
+  document.getElementById('topicResource').textContent = t.resource;
+  const pct = Math.round(topicCompletion(currentTopic)*100);
+  document.getElementById('progBar').style.width = pct+'%';
+
+  const sectionsEl = document.getElementById('sections');
+  sectionsEl.innerHTML = '';
+  t.sections.forEach((s, si)=>{
+    let done=0;
+    s.items.forEach((_,ii)=>{ if(state[`t${currentTopic}_s${si}_i${ii}`]) done++; });
+    const sec = document.createElement('div');
+    sec.className = 'section';
+    sec.innerHTML = `
+      <div class="section-head">
+        <span>${s.title} <span class="section-meta">(${done}/${s.items.length})</span></span>
+        <span class="chev">▶</span>
+      </div>
+      <div class="section-body"></div>`;
+    const body = sec.querySelector('.section-body');
+    s.items.forEach((item, ii)=>{
+      const id = `t${currentTopic}_s${si}_i${ii}`;
+      const checked = state[id] ? 'checked' : '';
+      const div = document.createElement('div');
+      div.className = 'task' + (state[id] ? ' checked':'');
+      div.innerHTML = `<input type="checkbox" ${checked}/><span>${item}</span>`;
+      div.addEventListener('click', async ()=>{
+        state[id] = !state[id];
+        await saveState();
+        render();
+      });
+      body.appendChild(div);
+    });
+    sec.querySelector('.section-head').addEventListener('click', ()=>{
+      sec.classList.toggle('open');
+    });
+    sectionsEl.appendChild(sec);
+  });
+
+  const noteBox = document.getElementById('noteBox');
+  if(t.note){
+    noteBox.style.display = 'block';
+    noteBox.innerHTML = `<b>Note:</b> ${t.note}`;
+  } else {
+    noteBox.style.display = 'none';
+  }
+}
+
+function render(){
+  renderSidebar();
+  renderMain();
+}
+
+(async ()=>{
+  await loadState();
+  // open first section by default
+  render();
+  const firstSection = document.querySelector('.section');
+  if(firstSection) firstSection.classList.add('open');
+})();
+</script>
+</body>
+</html>
