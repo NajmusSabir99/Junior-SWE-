@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>L1 Detailed Syllabus — Milestone Tracker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#0E1116;
+    --surface:#161B22;
+    --surface-2:#1D232C;
+    --line:#2A313C;
+    --text:#E6E8EB;
+    --muted:#8B93A1;
+    --accent:#5FBF77;
+    --success:#5FBF77;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:'IBM Plex Sans',sans-serif; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{display:flex; min-height:100vh;}
+
+  .sidebar{
+    width:250px; min-width:210px;
+    background:var(--surface); border-right:1px solid var(--line);
+    padding:24px 14px; display:flex; flex-direction:column; gap:4px;
+    overflow-y:auto;
+  }
+  .brand{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15px; margin-bottom:4px; padding:0 8px;}
+  .brand span{color:var(--accent);}
+  .subbrand{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted); padding:0 8px 20px; border-bottom:1px solid var(--line); margin-bottom:14px;}
+
+  .milestone-btn{
+    display:flex; align-items:center; gap:10px; padding:11px 10px; border-radius:8px;
+    cursor:pointer; border:1px solid transparent;
+    transition:background .15s, color .15s;
+  }
+  .milestone-btn:hover{background:var(--surface-2);}
+  .milestone-btn.active{background:var(--surface-2); border-color:var(--line);}
+  .m-num{
+    width:24px; height:24px; border-radius:6px; background:var(--surface-2);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted);
+  }
+  .milestone-btn.done .m-num{background:var(--success); color:#0E1116; font-weight:600;}
+  .milestone-btn.active .m-num{background:var(--accent); color:#0E1116; font-weight:600;}
+  .m-name{font-size:13px; font-weight:500; flex:1; line-height:1.3;}
+  .m-pct{font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--muted);}
+
+  .main{flex:1; padding:36px 44px; max-width:900px;}
+  h1{font-family:'Space Grotesk',sans-serif; font-size:24px; margin:0 0 3px; letter-spacing:-0.01em;}
+  .m-title{color:var(--muted); font-size:13px; font-family:'IBM Plex Mono',monospace; margin-bottom:20px;}
+
+  .progress-outer{height:6px; background:var(--surface-2); border-radius:3px; overflow:hidden; margin-bottom:28px;}
+  .progress-inner{height:100%; background:linear-gradient(90deg, #E3B341, var(--success)); width:0%; transition:width .3s;}
+
+  .module-list{
+    background:var(--surface); border:1px solid var(--line); border-radius:10px;
+    padding:6px 16px;
+  }
+  .task{
+    display:flex; align-items:flex-start; gap:12px; padding:11px 0;
+    border-bottom:1px solid var(--line); cursor:pointer; user-select:none;
+  }
+  .task:last-child{border-bottom:none;}
+  .task input{margin-top:3px; accent-color:var(--accent); width:15px; height:15px; cursor:pointer; flex-shrink:0;}
+  .task-id{
+    font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--muted);
+    min-width:52px; padding-top:1px; flex-shrink:0;
+  }
+  .task span.label{font-size:14px; line-height:1.4;}
+  .task.checked span.label{color:var(--muted); text-decoration:line-through;}
+
+  ::-webkit-scrollbar{width:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--line); border-radius:4px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="sidebar" id="sidebar">
+    <div class="brand">L1 <span>MODULE TRACKER</span></div>
+    <div class="subbrand">12 MILESTONES · 64 MODULES</div>
+    <div id="milestoneList"></div>
+  </div>
+  <div class="main">
+    <h1 id="mTitle"></h1>
+    <div class="m-title" id="mSubtitle"></div>
+    <div class="progress-outer"><div class="progress-inner" id="progBar"></div></div>
+    <div class="module-list" id="moduleList"></div>
+  </div>
+</div>
+
+<script>
+const milestones = [
+{ title:'Milestone 1', subtitle:'Roadmap of milestone-1', modules:[
+  {id:'1', label:'Learn and Explore HTML'},
+  {id:'2', label:'Learn and Explore CSS'},
+  {id:'3', label:'Git, source control, GitHub and hosting'},
+  {id:'4', label:'More about HTML'},
+  {id:'5', label:'Explore CSS Flexbox, Box Model, and Pixso Design'},
+  {id:'6', label:'Build a beautiful portfolio website'},
+  {id:'7', label:'Assignment 1: Landing Page Objectives'},
+  {id:'7.5', label:'[Bonus] Pseudo class, elements, position'}
+]},
+{ title:'Milestone 2', subtitle:'Roadmap of milestone 2', modules:[
+  {id:'8', label:'Responsive Website Layout'},
+  {id:'9', label:'More responsive layout and Responsive portfolio'},
+  {id:'10', label:'HTML CSS only Landing Page — G3 Architects'},
+  {id:'11', label:'Optimize images, icon and more CSS'},
+  {id:'12', label:'Responsive Website Assignment'}
+]},
+{ title:'Milestone 3', subtitle:'Important Message About The Next Modules', modules:[
+  {id:'13', label:'Introduction to Tailwind'},
+  {id:'14', label:'Tea Landing Page with Tailwind'},
+  {id:'15', label:'Biker Zone with Daisy UI'},
+  {id:'16', label:'Responsive Landing Page with framework'},
+  {id:'16.5', label:'HTML, CSS, Framework Bonus'}
+]},
+{ title:'Milestone 4', subtitle:'Roadmap of milestone 4', modules:[
+  {id:'17', label:'Introduction to JavaScript'},
+  {id:'18', label:'Fundamentals of Conditionals and Arrays'},
+  {id:'19', label:'Fundamental Concepts of Loops'},
+  {id:'20', label:'Fundamentals of String & Objects'},
+  {id:'21', label:'Fundamentals of Functions'},
+  {id:'22', label:'JS Concepts Recap and Problem Solving'},
+  {id:'23', label:'Advanced JavaScript Logic and Problem Solving'},
+  {id:'24', label:'Assignment'}
+]},
+{ title:'Milestone 5', subtitle:'Roadmap of milestone 5', modules:[
+  {id:'25', label:'Tour of DOM (Document Object Model)'},
+  {id:'26', label:'Event, addEventListener, Event bubble'},
+  {id:'27', label:"Let's Create Payooo Mobile Bank with DOM"},
+  {id:'28', label:"Functional Programming — Payooo Mobile Bank with DOM"},
+  {id:'29', label:'Assignment 5'},
+  {id:'29.5', label:'Integrate JavaScript Bonus Content'}
+]},
+{ title:'Milestone 6', subtitle:'What matters in this milestone', modules:[
+  {id:'30', label:'JS Recap and Basic ES6, ES1915'},
+  {id:'31', label:'(Advanced) More ES6'},
+  {id:'32', label:'Understand Common JavaScript Concepts'},
+  {id:'33', label:'API, JSON, Data load, dynamic website'},
+  {id:'34', label:'More about JavaScript'},
+  {id:'35', label:'API Recap with Phero Tube'},
+  {id:'35.5', label:'Changes in Assignment Submission Process'},
+  {id:'36', label:'ES6 and API Related Assignment 6'},
+  {id:'36.5', label:'Bonus — Local Storage'}
+]},
+{ title:'Milestone 7', subtitle:'Roadmap of this milestone', modules:[
+  {id:'37', label:'JavaScript You Need to Know for React'},
+  {id:'38', label:'React Core Concept (Part 1)'},
+  {id:'39', label:'React Core Concept (Part 2)'},
+  {id:'40', label:'Simple React — Rest Countries'},
+  {id:'41', label:'Modules and Data Storage Integration'},
+  {id:'42', label:'Simple React SPA with Scribbles Cafe'},
+  {id:'43', label:'React SPA Assignment'},
+  {id:'43.5', label:'Simple React Bonus'}
+]},
+{ title:'Milestone 8', subtitle:'Milestone Overview', modules:[
+  {id:'44', label:'Tailwind CSS, Axios, Rechart, Awesome Components'},
+  {id:'45', label:'React Router Concept'},
+  {id:'46', label:'React Core Concept (Part 3)'},
+  {id:'47', label:'Book Vibe with Router'},
+  {id:'48', label:'Assignment 8'}
+]},
+{ title:'Milestone 9', subtitle:'What Matters in this milestone', modules:[
+  {id:'49', label:'Simple React Firebase Authentication'},
+  {id:'50', label:'Email Password Authentication, Login Form'},
+  {id:'51', label:'React Auth Integration and Private Route'},
+  {id:'52', label:'Build Dragon News Layout'},
+  {id:'52.5', label:'Authentication with Dragon News'},
+  {id:'53', label:'Firebase Auth Assignment'},
+  {id:'53.5', label:'Node.js Bonus'}
+]},
+{ title:'Milestone 10', subtitle:'Milestone Overview', modules:[
+  {id:'54', label:'Getting Started with Node, Express and API'},
+  {id:'55', label:'Node.js, Express.js, MongoDB and CRUD Operations'},
+  {id:'56', label:'CRUD with Espresso Emporium using MongoDB Compass'},
+  {id:'56.5', label:'Bonus: Firebase Auth, MongoDB Integration, and Deployment'},
+  {id:'57', label:'Assignment 10'},
+  {id:'57.5', label:'Bonus Module'}
+]},
+{ title:'Milestone 11', subtitle:'Backend & JWT Implementation', modules:[
+  {id:'58', label:'Basic Job Portal with Auth Recap'},
+  {id:'59', label:'Basic Job Portal with CRUD Recap'},
+  {id:'60', label:'Introduction to JWT and Axios Interceptor'},
+  {id:'61', label:'Recap JWT and Interceptor with Job Portal'},
+  {id:'62', label:'Pagination and Load Data by Filter'},
+  {id:'63', label:'CRUD with JWT Battlefield'},
+  {id:'63.5', label:'Searching, Sorting and Filtering in MongoDB'}
+]},
+{ title:'Milestone 12', subtitle:'Final Project', modules:[
+  {id:'64', label:'Final Project — Part 1'}
+]}
+];
+
+let currentM = 0;
+let state = {};
+
+async function loadState(){
+  try{
+    const res = await window.storage.get('l1-milestone-state');
+    if(res && res.value) state = JSON.parse(res.value);
+  }catch(e){ state = {}; }
+}
+async function saveState(){
+  try{ await window.storage.set('l1-milestone-state', JSON.stringify(state)); }catch(e){}
+}
+
+function milestoneCompletion(mIdx){
+  const m = milestones[mIdx];
+  let done=0;
+  m.modules.forEach((mod,i)=>{
+    if(state[`m${mIdx}_${i}`]) done++;
+  });
+  return m.modules.length ? done/m.modules.length : 0;
+}
+
+function renderSidebar(){
+  const list = document.getElementById('milestoneList');
+  list.innerHTML = '';
+  milestones.forEach((m,i)=>{
+    const c = milestoneCompletion(i);
+    const pct = Math.round(c*100);
+    const btn = document.createElement('div');
+    btn.className = 'milestone-btn' + (i===currentM ? ' active':'') + (c===1 ? ' done':'');
+    btn.innerHTML = `<div class="m-num">${c===1?'✓':i+1}</div>
+      <div class="m-name">${m.title}</div>
+      <div class="m-pct">${pct}%</div>`;
+    btn.onclick = ()=>{ currentM = i; render(); };
+    list.appendChild(btn);
+  });
+}
+
+function renderMain(){
+  const m = milestones[currentM];
+  document.getElementById('mTitle').textContent = m.title;
+  document.getElementById('mSubtitle').textContent = m.subtitle;
+  const pct = Math.round(milestoneCompletion(currentM)*100);
+  document.getElementById('progBar').style.width = pct+'%';
+
+  const listEl = document.getElementById('moduleList');
+  listEl.innerHTML = '';
+  m.modules.forEach((mod, i)=>{
+    const id = `m${currentM}_${i}`;
+    const checked = state[id] ? 'checked' : '';
+    const div = document.createElement('div');
+    div.className = 'task' + (state[id] ? ' checked':'');
+    div.innerHTML = `<input type="checkbox" ${checked}/><span class="task-id">Mod ${mod.id}</span><span class="label">${mod.label}</span>`;
+    div.addEventListener('click', async ()=>{
+      state[id] = !state[id];
+      await saveState();
+      render();
+    });
+    listEl.appendChild(div);
+  });
+}
+
+function render(){
+  renderSidebar();
+  renderMain();
+}
+
+(async ()=>{
+  await loadState();
+  render();
+})();
+</script>
+</body>
+</html>
